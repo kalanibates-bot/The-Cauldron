@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="The Cauldron" />
+<meta name="theme-color" content="#1a1610" />
+<title>Cerridwen's Cauldron</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { overflow-x: hidden; }
+  html, body { height: 100%; background: #1a1610; width: 100%; }
+  body {
+    font-family: Georgia, 'Palatino Linotype', serif;
+    color: #e8dcc8;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    background: linear-gradient(160deg, #1a1610 0%, #2a2018 40%, #1e1a12 100%);
+    padding-bottom: env(safe-area-inset-bottom);
+    overflow-x: hidden;
+    width: 100%;
+  }
+  .container { max-width: 680px; width: 100%; margin: 0 auto; padding: 24px 16px 80px; overflow-x: hidden; }
+
+/* Header */
+.header { text-align: center; margin-bottom: 24px; padding-top: env(safe-area-inset-top); }
+.header-eyebrow { font-size: 10px; letter-spacing: 6px; color: #8a6a3a; text-transform: uppercase; margin-bottom: 6px; }
+.header-title { font-size: 22px; font-weight: normal; color: #f0e0c0; letter-spacing: 1px; text-shadow: 0 0 40px rgba(200,160,80,0.3); margin-bottom: 6px; word-break: break-word; }
+.header-date { font-size: 10px; color: #8a6a3a; letter-spacing: 3px; text-transform: uppercase; }
+
+/* Nav */
+.nav { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; }
+.nav-btn {
+background: transparent; border: 1px solid rgba(138,106,58,0.3);
+color: #a08050; padding: 7px 16px; border-radius: 20px;
+cursor: pointer; font-size: 12px; letter-spacing: 1px;
+font-family: Georgia, serif; transition: all 0.2s;
+-webkit-appearance: none;
+}
+.nav-btn.active { background: rgba(200,160,80,0.2); border-color: #8a6a3a; color: #f0e0c0; }
+
+/* Cards */
+.card {
+background: rgba(255,255,255,0.03);
+border: 1px solid rgba(138,106,58,0.3);
+border-radius: 16px; padding: 20px;
+margin-bottom: 14px;
+width: 100%; overflow-wrap: break-word; word-wrap: break-word;
+}
+.card-ritual { background: rgba(138,106,58,0.08); border-color: rgba(138,106,58,0.4); }
+.card-devotional { background: rgba(255,255,255,0.02); border-color: rgba(138,106,58,0.25); }
+.card-label {
+font-size: 10px; letter-spacing: 4px; color: #8a6a3a;
+text-transform: uppercase; margin-bottom: 12px;
+}
+
+/* Moon hero */
+.moon-hero { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.moon-svg-wrap { text-align: center; flex-shrink: 0; }
+.moon-emoji { font-size: 24px; margin-top: 4px; }
+.moon-name { font-size: 22px; color: #f0e0c0; font-style: italic; margin-bottom: 6px; }
+.moon-energy { font-size: 13px; color: #b09070; font-style: italic; line-height: 1.6; margin-bottom: 10px; }
+.moon-illumination { color: #c8a060; }
+.moon-counters { display: flex; gap: 14px; font-size: 11px; color: #8a6a3a; flex-wrap: wrap; }
+.moon-counters strong { color: #c8a060; }
+
+/* Devotional */
+.dev-figure { font-size: 19px; color: #f0e0c0; margin-bottom: 3px; }
+.dev-type { font-size: 10px; color: #6a5030; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+.dev-text {
+font-size: 13px; color: #c8b890; line-height: 1.9; font-style: italic;
+border-left: 2px solid rgba(138,106,58,0.4); padding-left: 14px;
+margin-bottom: 12px;
+}
+.dev-reflection-label { font-size: 10px; color: #6a5030; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+.dev-reflection { font-size: 13px; color: #a09070; line-height: 1.7; margin-bottom: 16px; }
+.dev-link {
+display: inline-flex; align-items: center; gap: 5px;
+font-size: 11px; color: #c8a060; text-decoration: none;
+border: 1px solid rgba(138,106,58,0.4); border-radius: 20px;
+padding: 6px 14px; font-family: Georgia, serif;
+}
+
+/* Sabbat card */
+.sabbat-hero { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.sabbat-name { font-size: 18px; color: #f0e0c0; margin-bottom: 5px; word-break: break-word; }
+.sabbat-desc { font-size: 12px; color: #b09070; font-style: italic; line-height: 1.6; }
+.sabbat-deity { font-size: 11px; color: #8a6a3a; margin-top: 5px; }
+.sabbat-counter { text-align: center; min-width: 60px; flex-shrink: 0; }
+.sabbat-num { font-size: 30px; color: #c8a060; }
+.sabbat-days { font-size: 10px; color: #8a6a3a; letter-spacing: 2px; }
+.sabbat-date { font-size: 11px; color: #8a6a3a; margin-top: 3px; }
+
+/* Ritual */
+.ritual-text { font-size: 13px; color: #d4c4a0; line-height: 1.85; margin-bottom: 10px; }
+.ritual-sabbat-note { font-size: 12px; color: #c8a060; font-style: italic; line-height: 1.7; border-left: 2px solid rgba(200,160,80,0.4); padding-left: 12px; margin-bottom: 14px; }
+.ritual-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.btn-expand {
+background: transparent; border: 1px solid rgba(138,106,58,0.5);
+color: #c8a060; padding: 6px 14px; border-radius: 20px;
+cursor: pointer; font-size: 11px; letter-spacing: 1px;
+font-family: Georgia, serif; -webkit-appearance: none;
+transition: background 0.2s;
+}
+.btn-expand.open { background: rgba(138,106,58,0.25); }
+.btn-refresh {
+background: transparent; border: 1px solid rgba(138,106,58,0.3);
+color: #8a6a3a; padding: 6px 14px; border-radius: 20px;
+cursor: pointer; font-size: 11px; letter-spacing: 1px;
+font-family: Georgia, serif; -webkit-appearance: none;
+}
+
+/* Ingredient lore */
+.lore-panel { margin-top: 18px; border-top: 1px solid rgba(138,106,58,0.3); padding-top: 16px; display: none; }
+.lore-panel.open { display: block; }
+.lore-label { font-size: 10px; letter-spacing: 3px; color: #8a6a3a; text-transform: uppercase; margin-bottom: 14px; }
+.lore-item { border-left: 2px solid rgba(138,106,58,0.5); padding-left: 14px; margin-bottom: 14px; }
+.lore-name { font-size: 12px; color: #f0e0c0; font-style: italic; margin-bottom: 3px; text-transform: capitalize; }
+.lore-symbol { font-size: 10px; color: #c8a060; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; }
+.lore-celtic { font-size: 12px; color: #a09070; line-height: 1.75; }
+
+/* Calendar */
+.cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.cal-nav { background: none; border: none; color: #8a6a3a; font-size: 22px; cursor: pointer; padding: 4px 8px; }
+.cal-month { font-size: 15px; letter-spacing: 3px; color: #f0e0c0; text-transform: uppercase; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.cal-weekday { text-align: center; font-size: 9px; color: #8a6a3a; letter-spacing: 2px; padding: 4px 0; }
+.cal-day {
+background: rgba(255,255,255,0.02);
+border: 1px solid rgba(138,106,58,0.1);
+border-radius: 8px; padding: 5px 3px; text-align: center; min-height: 50px;
+}
+.cal-day.today { background: rgba(200,160,80,0.2); border-color: #c8a060; }
+.cal-day.sabbat { background: rgba(138,106,58,0.15); border-color: rgba(138,106,58,0.5); }
+.cal-day.empty { background: none; border: none; }
+.cal-daynum { font-size: 11px; color: #b09070; margin-bottom: 2px; }
+.cal-day.today .cal-daynum { color: #f0e0c0; }
+.cal-moon { font-size: 13px; }
+.cal-sabbat-sym { font-size: 9px; color: #c8a060; }
+.cal-eclipse { font-size: 8px; color: #d07040; }
+.cal-dot { width: 4px; height: 4px; background: #c8a060; border-radius: 50%; margin: 2px auto 0; }
+.cal-legend { display: flex; gap: 12px; margin-top: 14px; font-size: 10px; color: #8a6a3a; flex-wrap: wrap; }
+
+/* Wheel */
+.wheel-item {
+background: rgba(255,255,255,0.02);
+border: 1px solid rgba(138,106,58,0.2);
+border-radius: 12px; padding: 14px 16px; margin-bottom: 10px;
+display: flex; gap: 12px; align-items: center; overflow: hidden;
+}
+.wheel-item.next { background: rgba(138,106,58,0.15); border-color: rgba(138,106,58,0.6); }
+.wheel-sym { font-size: 26px; flex-shrink: 0; }
+.wheel-body { flex: 1; }
+.wheel-name { font-size: 15px; color: #f0e0c0; margin-bottom: 3px; }
+.wheel-desc { font-size: 11px; color: #b09070; font-style: italic; line-height: 1.6; }
+.wheel-deity { font-size: 10px; color: #8a6a3a; margin-top: 3px; }
+.wheel-meta { text-align: right; flex-shrink: 0; min-width: 50px; }
+.wheel-date { font-size: 10px; color: #8a6a3a; }
+.wheel-days { font-size: 10px; color: #c8a060; margin-top: 2px; }
+
+/* Eclipse */
+.eclipse-item {
+background: rgba(255,255,255,0.02);
+border: 1px solid rgba(138,106,58,0.3);
+border-radius: 12px; padding: 14px 18px; margin-bottom: 10px;
+}
+.eclipse-item.next { background: rgba(138,106,58,0.1); }
+.eclipse-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.eclipse-type { font-size: 14px; color: #f0e0c0; margin-bottom: 3px; }
+.eclipse-date { font-size: 10px; color: #8a6a3a; }
+.eclipse-meta { text-align: right; }
+.eclipse-countdown { font-size: 10px; color: #c8a060; }
+.eclipse-vis { font-size: 9px; color: #8a6a3a; margin-top: 2px; }
+.eclipse-ritual { font-size: 12px; color: #c8a860; font-style: italic; line-height: 1.7; border-left: 2px solid rgba(138,106,58,0.4); padding-left: 12px; }
+
+.footer { text-align: center; margin-top: 28px; font-size: 10px; color: #504030; letter-spacing: 2px; }
+.view { display: none; }
+.view.active { display: block; }
+</style>
+
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="header-eyebrow">Cerridwen's Cauldron</div>
+    <div class="header-title">✦ The Wheel &amp; the Moon ✦</div>
+    <div class="header-date" id="headerDate"></div>
+  </div>
+
+  <div class="nav">
+    <button class="nav-btn active" onclick="showView('today')">Today</button>
+    <button class="nav-btn" onclick="showView('month')">Month</button>
+    <button class="nav-btn" onclick="showView('wheel')">Wheel</button>
+    <button class="nav-btn" onclick="showView('eclipses')">Eclipses</button>
+  </div>
+
+  <!-- TODAY -->
+
+  <div id="view-today" class="view active">
+    <!-- Moon -->
+    <div class="card">
+      <div class="card-label">Tonight's Moon</div>
+      <div class="moon-hero">
+        <div class="moon-svg-wrap">
+          <svg id="moonSVG" viewBox="0 0 80 80" width="72" height="72"></svg>
+          <div class="moon-emoji" id="moonEmoji"></div>
+        </div>
+        <div>
+          <div class="moon-name" id="moonName"></div>
+          <div class="moon-energy" id="moonEnergy"></div>
+          <div class="moon-counters" id="moonCounters"></div>
+        </div>
+      </div>
+    </div>
+
+```
+<!-- Devotional -->
+<div class="card card-devotional">
+  <div class="card-label">ᚔ Daily Devotional</div>
+  <div class="dev-figure" id="devFigure"></div>
+  <div class="dev-type" id="devType"></div>
+  <div class="dev-text" id="devText"></div>
+  <div class="dev-reflection-label">Reflection</div>
+  <div class="dev-reflection" id="devReflection"></div>
+  <a class="dev-link" id="devLink" target="_blank" rel="noopener noreferrer">↗ <span id="devLinkText"></span></a>
+</div>
+
+<!-- Next Sabbat -->
+<div class="card">
+  <div class="card-label">Next on the Wheel</div>
+  <div class="sabbat-hero">
+    <div>
+      <div class="sabbat-name" id="sabbatName"></div>
+      <div class="sabbat-desc" id="sabbatDesc"></div>
+      <div class="sabbat-deity" id="sabbatDeity"></div>
+    </div>
+    <div class="sabbat-counter">
+      <div class="sabbat-num" id="sabbatDays"></div>
+      <div class="sabbat-days">DAYS</div>
+      <div class="sabbat-date" id="sabbatDate"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Ritual -->
+<div class="card card-ritual" id="ritualCard">
+  <div class="card-label">🌿 Today's Ritual Suggestion</div>
+  <div class="ritual-text" id="ritualText"></div>
+  <div class="ritual-sabbat-note" id="ritualSabbatNote" style="display:none"></div>
+  <div class="ritual-btns">
+    <button class="btn-expand" id="loreBtn" onclick="toggleLore()">▼ What do these ingredients mean?</button>
+    <button class="btn-refresh" onclick="nextRitual()">↻ Different suggestion</button>
+  </div>
+  <div class="lore-panel" id="lorePanel">
+    <div class="lore-label">ᚉ Celtic Ingredient Lore</div>
+    <div id="loreItems"></div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- MONTH -->
+
+  <div id="view-month" class="view">
+    <div class="card">
+      <div class="cal-header">
+        <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+        <div class="cal-month" id="calMonthLabel"></div>
+        <button class="cal-nav" onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="cal-grid" id="calWeekdays"></div>
+      <div class="cal-grid" id="calGrid" style="margin-top:2px"></div>
+      <div class="cal-legend">
+        <span>● = Full/New Moon</span>
+        <span style="color:#c8a060">· ✦ = Sabbat</span>
+        <span style="color:#d07040">· ☀️ = Eclipse</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHEEL -->
+
+  <div id="view-wheel" class="view">
+    <div style="font-size:10px;letter-spacing:4px;color:#8a6a3a;text-transform:uppercase;text-align:center;margin-bottom:14px">The Eight Sabbats</div>
+    <div id="wheelList"></div>
+    <div style="font-size:10px;color:#8a6a3a;text-align:center;font-style:italic;margin-top:6px">Showing next 4 sabbats · Northern Hemisphere</div>
+  </div>
+
+  <!-- ECLIPSES -->
+
+  <div id="view-eclipses" class="view">
+    <div style="font-size:10px;letter-spacing:4px;color:#8a6a3a;text-transform:uppercase;text-align:center;margin-bottom:14px">Upcoming Eclipses</div>
+    <div id="eclipseList"></div>
+  </div>
+
+  <div class="footer">✦ AS ABOVE, SO BELOW ✦</div>
+</div>
+
+<script>
+// ── Data ──────────────────────────────────────────────────────────────────────
+
+const SABBATS = [
+  { name:"Imbolc", date:"Feb 1", month:1, day:1, symbol:"🕯️", desc:"Brigid's flame. Stirring beneath the earth. Dedicate to craft, healing, new beginnings.", deity:"Brigid" },
+  { name:"Ostara", date:"Mar 20", month:2, day:20, symbol:"🌱", desc:"Spring equinox. Balance restored. Plant literal and metaphorical seeds.", deity:"The land awakening" },
+  { name:"Beltane", date:"May 1", month:4, day:1, symbol:"🔥", desc:"Fire festival. Vitality, fertility, passion. Leap the flames if you dare.", deity:"The Green Man" },
+  { name:"Litha", date:"Jun 21", month:5, day:21, symbol:"☀️", desc:"Summer solstice. Peak of the sun's power. Honor what has grown.", deity:"The Oak King" },
+  { name:"Lughnasadh", date:"Aug 1", month:7, day:1, symbol:"🌾", desc:"First harvest. Give thanks, bake bread, honor sacrifice and abundance.", deity:"Lugh" },
+  { name:"Mabon", date:"Sep 22", month:8, day:22, symbol:"🍂", desc:"Autumn equinox. Second harvest. Balance again — prepare for the dark.", deity:"The harvest" },
+  { name:"Samhain", date:"Oct 31", month:9, day:31, symbol:"🍃", desc:"The veil thins. Honor your dead. The Celtic new year begins in darkness.", deity:"The Morrígan, ancestors" },
+  { name:"Yule", date:"Dec 21", month:11, day:21, symbol:"🌲", desc:"Winter solstice. The longest night. The sun is reborn. Light every candle.", deity:"The Holly King / Cerridwen" },
+];
+
+const ECLIPSES = [
+  { date:new Date(2025,2,13), type:"Partial Solar", visibility:"Africa, Europe", ritual:"Liminal threshold work. What needs partial release?" },
+  { date:new Date(2025,2,29), type:"Total Lunar", visibility:"Americas, Europe, Africa", ritual:"Deep shadow work. What do you hide even from yourself?" },
+  { date:new Date(2025,8,7), type:"Total Lunar", visibility:"Americas, Europe, Africa, Asia", ritual:"Cerridwen's cauldron turns. Transformation at its most potent." },
+  { date:new Date(2025,8,21), type:"Partial Solar", visibility:"Southern hemisphere", ritual:"Good for banishing half-finished cycles." },
+  { date:new Date(2026,1,17), type:"Annular Solar", visibility:"Antarctica, S. America", ritual:"Ring of fire: a door within a door. Intentions set now burn long." },
+  { date:new Date(2026,2,3), type:"Total Lunar", visibility:"Americas, Europe, Africa", ritual:"Powerful full shadow. Ideal for deep release and ancestor work." },
+  { date:new Date(2026,7,12), type:"Total Solar", visibility:"Russia, Greenland, Iceland", ritual:"Rare, powerful. The ultimate threshold between worlds." },
+  { date:new Date(2026,7,28), type:"Partial Lunar", visibility:"Americas, Europe, Africa", ritual:"Begin releasing what the full eclipse will finish." },
+];
+
+const MYTHOLOGY = [
+  { figure:"Cerridwen", type:"Goddess · Keeper of the Cauldron", devotional:"She does not offer transformation gently. Her cauldron demands that you enter the process fully — grief, dissolution, rebirth. Sit with what in you is not yet cooked.", reflection:"What are you mid-transformation in right now? Can you trust the heat?", url:"https://www.tairis.co.uk/mythology/cerridwen/", source:"Tairis" },
+  { figure:"The Morrígan", type:"Goddess · Sovereignty, Battle, Fate", devotional:"She does not cause your battles. She shows up at the threshold of them and asks: do you know what you're fighting for? She is not cruelty — she is unflinching honesty.", reflection:"Where are you avoiding a confrontation that the Morrígan would walk straight into?", url:"https://www.tairis.co.uk/mythology/the-morrigan/", source:"Tairis" },
+  { figure:"Brigid", type:"Goddess · Flame, Healing, Craft", devotional:"Brigid holds three flames: the forge, the hearth, and the healing well. She asks which one you need today — the fire to make something, the warmth to sustain it, or the water to restore you.", reflection:"Which of Brigid's three gifts do you need most right now?", url:"https://www.sacred-texts.com/neu/celt/index.htm", source:"Sacred Texts" },
+  { figure:"Cú Chulainn", type:"Hero · Ulster Cycle", devotional:"He was not the wisest or the most careful. He was the most alive. His geis — the sacred obligations bound to him — remind us that our commitments shape us as much as our choices.", reflection:"What sacred obligations are shaping who you're becoming?", url:"https://www.sacred-texts.com/neu/celt/cu/index.htm", source:"Sacred Texts" },
+  { figure:"Lugh", type:"God · Light, Skill, Mastery", devotional:"Lugh gained entry to the hall of Tara not by force but by declaring himself master of every art. He teaches that skill is sacred, and that showing up with your full capability is its own kind of power.", reflection:"What skill of yours are you undervaluing or hiding?", url:"https://www.sacred-texts.com/neu/celt/index.htm", source:"Sacred Texts" },
+  { figure:"The Dagda", type:"God · Earth, Abundance, Wisdom", devotional:"He carries a club that kills with one end and restores life with the other. A cauldron that never empties. He is not refined — he is abundant, earthy, and wholly present. He reminds you that nourishment is sacred.", reflection:"Where are you withholding nourishment — from yourself or others?", url:"https://www.tairis.co.uk/mythology/the-dagda/", source:"Tairis" },
+  { figure:"Rhiannon", type:"Goddess · Welsh · Sovereignty, Horses, Otherworld", devotional:"Falsely accused, stripped of status, made to carry others as a horse — and she endured with such grace that her innocence could not be buried forever. She teaches that unjust burdens can be borne without letting them define you.", reflection:"What burden are you carrying that was never rightfully yours?", url:"https://celtic-mythology.co.uk/welsh-mythology/rhiannon/", source:"Celtic Mythology" },
+  { figure:"Manannán mac Lir", type:"God · Sea, Otherworld, Magic", devotional:"He rules the sea between worlds — the place of not-quite-here and not-quite-there. His mist hides the islands of the blessed. He invites you to stop gripping the shore and learn to navigate fog.", reflection:"What uncertainty are you refusing to sail into?", url:"https://www.tairis.co.uk/mythology/manannan-mac-lir/", source:"Tairis" },
+  { figure:"Cailleach", type:"Ancient One · Winter, Weather, Earth", devotional:"She shaped the mountains by dropping stones from her apron. She is winter itself — ancient, uncompromising, honest. She does not warm you. She makes you strong enough to bear the cold.", reflection:"What harshness in your life is making you stronger, even if it doesn't feel that way yet?", url:"https://celtic-mythology.co.uk/scottish-mythology/the-cailleach/", source:"Celtic Mythology" },
+  { figure:"Fionn mac Cumhaill", type:"Hero · Fenian Cycle", devotional:"He gained all wisdom by accident — a burn from the Salmon of Knowledge, thumb to mouth. Sometimes the most profound knowing arrives not through effort but through presence, through being the one who was simply there.", reflection:"What have you learned by accident that turned out to be essential?", url:"https://www.sacred-texts.com/neu/celt/fionn.htm", source:"Sacred Texts" },
+  { figure:"Danu", type:"Mother Goddess · Tuatha Dé Danann", devotional:"She is the great mother from whom the gods themselves descend. The Tuatha Dé Danann carry her name into every myth. She is the ground beneath all of it.", reflection:"Who or what is your deepest foundation? What are you built from?", url:"https://www.sacred-texts.com/neu/celt/index.htm", source:"Sacred Texts" },
+  { figure:"The Salmon of Knowledge", type:"Sacred Animal · Irish Mythology", devotional:"It swam the pool of Fec for seven years, consuming the hazelnuts of wisdom from nine sacred trees. All knowledge it carried in its flesh. What are you slowly accumulating that will one day be your greatest gift?", reflection:"What wisdom are you building slowly, day by day, that you haven't yet recognized as power?", url:"https://www.sacred-texts.com/neu/celt/fionn.htm", source:"Sacred Texts" },
+  { figure:"Arianrhod", type:"Goddess · Welsh · Stars, Fate, Silver Wheel", devotional:"Her fortress spins in the stars — Caer Arianrhod is the Corona Borealis. She holds the threads of fate and the naming of souls. She reminds you that identity is not always given freely — sometimes it must be claimed.", reflection:"What part of your identity are you in the process of claiming for yourself?", url:"https://celtic-mythology.co.uk/welsh-mythology/arianrhod/", source:"Celtic Mythology" },
+  { figure:"The Sídhe", type:"Otherworldly Beings · Irish Tradition", devotional:"The aos sí live in the hollow hills — not far away, but sideways from here. They are not small and cute. They are ancient, powerful, and easily offended. They ask that you remember the world is wider than you can see.", reflection:"What are you dismissing as impossible that might simply be outside your current vision?", url:"https://www.tairis.co.uk/practices/the-aos-si/", source:"Tairis" },
+  { figure:"Oisín", type:"Hero · Fenian Cycle · Land of Youth", devotional:"He spent three hundred years in Tír na nÓg and when he returned, he aged to dust the moment he touched the earth. Some journeys cannot be returned from unchanged. Some loves live in places you can visit but not stay.", reflection:"Where are you trying to return to a place that can't hold you anymore?", url:"https://www.sacred-texts.com/neu/celt/index.htm", source:"Sacred Texts" },
+  { figure:"The Ogham", type:"Sacred Alphabet · Tree Language", devotional:"Each letter is a tree. Each tree is a world. The Celts did not separate language from nature — the alphabet itself was rooted in the living forest. To write was to invoke. To name was to plant.", reflection:"If your name were a tree in the ogham, which tree would hold you best?", url:"https://www.tairis.co.uk/practices/ogham/", source:"Tairis" },
+  { figure:"Epona", type:"Goddess · Horses, Journeys, Sovereignty", devotional:"She rides between worlds — the only Celtic goddess adopted directly into the Roman pantheon. She governs the long journey, the endurance required when the destination is not yet visible.", reflection:"What long journey are you on that requires endurance more than speed?", url:"https://celtic-mythology.co.uk/gaulish-mythology/epona/", source:"Celtic Mythology" },
+  { figure:"Tír na nÓg", type:"Otherworld · Land of Eternal Youth", devotional:"It exists beyond the ninth wave — the liminal boundary of the sea. Not a reward after death but a place that exists now, accessible to those the Otherworld calls. It is beauty without decay.", reflection:"When have you touched something so beautiful it felt outside of time?", url:"https://celtic-mythology.co.uk/places/tir-na-nog/", source:"Celtic Mythology" },
+  { figure:"The Three Cauldrons", type:"Concept · Irish Spiritual Philosophy", devotional:"Each person holds three cauldrons within: of warming (life force), of vocation (calling), and of wisdom — turned upright only through profound joy or grief. Your work in this life is to fill all three.", reflection:"Which of your three inner cauldrons feels most empty right now?", url:"https://www.tairis.co.uk/practices/the-cauldron-of-poesy/", source:"Tairis" },
+  { figure:"Cernunnos", type:"God · The Horned One, Wild Things, Liminal Spaces", devotional:"He sits at the crossroads between the tame and the wild, antlered and patient. He does not tame the animals around him — he communes with them. He asks you what parts of yourself you've tried to domesticate that are meant to run free.", reflection:"What wild part of yourself have you been trying to make socially acceptable?", url:"https://www.tairis.co.uk/mythology/cernunnos/", source:"Tairis" },
+];
+
+const INGREDIENT_LORE = {
+  "black candle":{ symbol:"Banishment, protection, absorption of negative energy", celtic:"Black is the color of the void before creation — in Celtic cosmology, it precedes transformation, not destruction. Cerridwen's cauldron operates in darkness before the new thing emerges." },
+  "white candle":{ symbol:"Clarity, purity, new beginnings, the Otherworld", celtic:"White holds the light of Tír na nÓg. Lit at thresholds, it invites clarity from the Otherworld and signals openness to guidance from what lies beyond the veil." },
+  "red candle":{ symbol:"Vitality, courage, protection, blood bonds", celtic:"Red is the color of sovereignty and battle-readiness. The Morrígan herself is draped in it. A red candle calls your own fierceness forward — the color of those who will not be moved." },
+  "orange candle":{ symbol:"Momentum, energy, creativity, the harvest sun", celtic:"The amber and orange of late harvest — Lughnasadh energy. Burn it when you need to act with Lugh's skilled, sun-bright confidence." },
+  "green candle":{ symbol:"Growth, abundance, land connection, healing", celtic:"Green is the color of the sacred land — the sovereignty goddess made visible. Burn it when you need to root into the earth and call in what grows slowly, patiently, surely." },
+  "beeswax candle":{ symbol:"The sacred hive, community, divine sweetness, Brigid", celtic:"Beeswax is Brigid's candle. The hive was a microcosm of otherworldly order — perfectly organized, producing something golden and sacred. Beeswax burns brighter and longer." },
+  "amethyst":{ symbol:"Psychic protection, intuition, inner vision", celtic:"Purple stones were associated with the liminal — the in-between. Amethyst enhances the inner sight the Celts called imbas forosnai, the illumination from within." },
+  "rosemary":{ symbol:"Memory, clarity, protection, loyalty to the dead", celtic:"Rosemary's association with memory made it a funeral herb across Celtic traditions. It clears the air and sharpens the mind — believed to strengthen any working it accompanied." },
+  "salt":{ symbol:"Purification, boundary-setting, preservation", celtic:"Salt was precious and sacred. In Celtic folk practice, scattered at thresholds it forms a line of protection that nothing uninvited could cross." },
+  "water":{ symbol:"The Otherworld gateway, cleansing, flow, healing", celtic:"Water was the most sacred element in Celtic spirituality. Springs, rivers, and wells were portals to the Otherworld — offerings were dropped into them for millennia." },
+  "moon water":{ symbol:"Lunar power, intuition, the goddess's blessing", celtic:"Water left under the full moon absorbs her light. In Celtic tradition, the moon governs the tides of magic. Moon water is her concentrated blessing — used to anoint, cleanse, and empower." },
+  "incense":{ symbol:"Air element, carries prayers upward, purification", celtic:"Smoke is a liminal substance — it moves between worlds. The Celts used sacred fires and aromatic burning to communicate with the divine and cleanse space before ritual." },
+  "4 thieves oil":{ symbol:"Protection, boundary enforcement, banishment", celtic:"Rooted in strongly aromatic herbs. In Celtic folk practice, pungent herbs at doors and thresholds kept unwanted influences out. This oil is that tradition's fierce and concentrated descendant." },
+  "mugwort":{ symbol:"Dreaming, prophecy, the inner eye, travel between worlds", celtic:"One of the most sacred dream herbs. Druids and seers used it to enhance visions. Burned or tucked under a pillow, it opens the door to what part of you already knows." },
+  "hawthorn":{ symbol:"The Otherworld threshold, Beltane, fairy trees, protection", celtic:"One of the three sacred fairy trees — oak, ash, and thorn. A lone hawthorn marks a portal. It guards thresholds between worlds. Always ask its permission before working with it." },
+  "oak bark":{ symbol:"Strength, endurance, the Druids' sacred tree, protection", celtic:"The Druids — whose name may derive from the word for oak — held it as the most sacred tree. Oak carries centuries and bends for no one. Burn it for workings of deep, enduring strength." },
+  "black salt":{ symbol:"Banishment, binding negative energy, strong protection", celtic:"Salt mixed with ash or charcoal — doubly protective. Scatter it at thresholds and speak your boundary: nothing crosses here that I have not invited." },
+  "lavender":{ symbol:"Peace, calm, clarity, gentle healing", celtic:"Used in Celtic healing traditions for its calming, clarifying nature. Lavender quiets the noise so the spirit can hear what it needs to hear." },
+  "frankincense":{ symbol:"Sacred space, spiritual elevation, consecration", celtic:"Frankincense entered British folk practice through ancient trade. Its smoke consecrates space — marks what you're doing as sacred and worthy of divine attention." },
+  "bay leaf":{ symbol:"Wishes, victory, clarity, prophecy", celtic:"Associated with the sharpening of intention and clarity of mind. Write a wish or name on it and burn it to send the intention forward with force and focus." },
+  "clove":{ symbol:"Protection, banishment, warmth, driving away negativity", celtic:"Clove's penetrating scent was believed to cut through stagnant energy. In folk magic it was a driving force — where clove burns, what should not be there finds it difficult to remain." },
+  "cinnamon":{ symbol:"Speed, success, fire energy, abundance", celtic:"Cinnamon was a luxury, which made it sacred — an offering worthy of attention. Burn it to speed up a working or invite warmth and abundance." },
+  "chamomile":{ symbol:"Calm, rest, gentle solar energy, peace", celtic:"Chamomile carries the warmth of a gentle sun, used in folk healing for rest and nervous calm. An herb for when the work requires stillness, not force." },
+  "rowan":{ symbol:"Protection from enchantment, second sight, warding", celtic:"Rowan was planted by doors to protect against malicious magic. A rowan cross tied with red thread was the strongest ward in Celtic folk tradition — nothing harmful could pass it." },
+  "apple":{ symbol:"The Otherworld, immortality, Avalon, healing", celtic:"The apple is the fruit of Avalon — the Isle of Apples. Cut one crosswise to reveal the hidden pentagram inside. Offering an apple was an invitation to the Otherworld." },
+};
+
+const RITUALS = {
+  "New Moon":[
+    { text:"Light a black or white candle. Write your intentions on paper — fold it toward you three times. Place it under your amethyst overnight. In the morning, tuck it somewhere dark until the full moon.", ingredients:["black candle","white candle","amethyst"] },
+    { text:"Brew rosemary tea as a clearing drink. Burn incense to cleanse your space. Set one specific goal for this lunar cycle — write it down and read it aloud three times.", ingredients:["rosemary","incense"] },
+    { text:"Work with Cerridwen's cauldron symbolically — speak your intention aloud over a bowl of water. Add a pinch of salt. Stir counterclockwise three times to release the old, then clockwise to call in the new. Pour it outside as an offering.", ingredients:["water","salt"] },
+  ],
+  "Waxing Crescent":[
+    { text:"Anoint an orange or green candle with cinnamon oil or 4 Thieves oil. Let it burn in a window facing the direction of something you're calling toward you. Speak your desire to the flame.", ingredients:["orange candle","green candle","cinnamon","4 thieves oil"] },
+    { text:"Carry your amethyst today. Each time you touch it, breathe slowly and restate what you're calling in. Tonight, set it on your windowsill with a bay leaf beneath it.", ingredients:["amethyst","bay leaf"] },
+    { text:"Anoint your wrists with lavender oil and speak your intention aloud before you begin. Then start something you've been putting off — waxing energy supports all beginnings.", ingredients:["lavender"] },
+  ],
+  "First Quarter":[
+    { text:"Burn a clove or two on an incense coal while you work through the obstacle in front of you. Clove cuts through resistance. Name what is in your way, then do the hard thing anyway.", ingredients:["incense","clove"] },
+    { text:"Salt water cleanse your workspace — dissolve salt in warm water and wipe surfaces outward from center. Speak your goal aloud as you work.", ingredients:["salt","water"] },
+    { text:"Write your obstacles on paper. Burn the paper in a fireproof dish at a white candle's flame. Bury the ash outside — return the obstacle to the earth for transformation.", ingredients:["white candle"] },
+  ],
+  "Waxing Gibbous":[
+    { text:"Revisit the intention you set at the New Moon. Add something to it — a green candle, fresh rosemary, a spoken addition. Tend your working as you would tend a garden: with attention, not impatience.", ingredients:["green candle","rosemary"] },
+    { text:"A gratitude practice tonight. Brew lavender or chamomile tea and sit with it while you write: what is already moving toward you? Acknowledge it. The Waxing Gibbous rewards those who notice.", ingredients:["lavender","chamomile"] },
+    { text:"Add rosemary to your meal tonight. As you cook, speak aloud the names of what you are growing this cycle. Rosemary sharpens and strengthens all ongoing work.", ingredients:["rosemary"] },
+  ],
+  "Full Moon":[
+    { text:"Charge your amethyst and moon water tonight — set them outside or on a windowsill in her full light. Light a white candle. This is Cerridwen's peak hour. Speak your gratitude for what has grown.", ingredients:["amethyst","moon water","white candle"] },
+    { text:"Release working: write what you are finished carrying on paper. Burn it in a fireproof dish over a black candle's flame, with a pinch of dried mugwort on the coals. Watch the smoke carry it away.", ingredients:["black candle","mugwort"] },
+    { text:"Divination night — pull your tarot cards, scry in a bowl of moon water, or simply sit quietly and listen. Anoint your third eye with a single drop of frankincense. The full moon makes the inner eye sharp.", ingredients:["moon water","frankincense"] },
+    { text:"Protective working: lay a ring of black salt around a white pillar candle. Speak the names of everyone you are protecting. Let the candle burn as long as you are present to tend it.", ingredients:["black salt","white candle"] },
+  ],
+  "Waning Gibbous":[
+    { text:"Give something away today — donate, share, offer food to someone. Waning energy asks you to release. Tonight, light a white candle and say aloud one thing you are releasing with genuine gratitude.", ingredients:["white candle"] },
+    { text:"Burn a bay leaf on which you've written one word of thanks — for something that served you this cycle, even if it was difficult. Gratitude before release deepens the work.", ingredients:["bay leaf"] },
+    { text:"Clear and cleanse a neglected space. Wipe it down with salt water, then burn rosemary as a smoke cleanser moving through the space. This is maintenance magic — the unglamorous kind that holds everything else together.", ingredients:["salt","water","rosemary","incense"] },
+  ],
+  "Last Quarter":[
+    { text:"Banishing work. Anoint your doorways and windowsills with 4 Thieves oil — start at the top of each frame, move downward and outward. Speak your boundary clearly: 'What is mine stays. What is not mine, goes now.'", ingredients:["4 thieves oil","black candle"] },
+    { text:"Black candle work tonight. Write what you are releasing on a small piece of paper. Hold it at the flame until it catches, then place it in a fireproof dish. Watch it become ash. It is done.", ingredients:["black candle"] },
+    { text:"Scatter black salt across your thresholds — front door, back door, each windowsill. Move deliberately, speaking your boundary as you go. Sweep it outward in the morning.", ingredients:["black salt","salt"] },
+  ],
+  "Waning Crescent":[
+    { text:"Draw a bath with sea salt, a handful of rosemary, and a few drops of lavender oil. Soak while breathing slowly. As the water drains, let it carry what this cycle held that you no longer need.", ingredients:["salt","rosemary","lavender"] },
+    { text:"Sit in candlelight with your amethyst in your hands. Ask Cerridwen: what is she asking you to transform before the new cycle begins? Sit with the question. Simply listen.", ingredients:["white candle","amethyst"] },
+    { text:"Burn a small amount of mugwort on an incense coal before sleep. Keep a notebook by your bed. Dreams near the dark moon carry messages that deserve to be caught.", ingredients:["mugwort","incense"] },
+  ],
+};
+
+// ── Moon Math ─────────────────────────────────────────────────────────────────
+
+function getMoonPhase(date) {
+  const known = new Date(2000,0,6);
+  const diff = (date - known) / 86400000;
+  const cycle = 29.53058867;
+  const pos = ((diff % cycle) + cycle) % cycle;
+  const pct = pos / cycle;
+  if (pos < 1.85)  return { name:"New Moon",        emoji:"🌑", pct, illumination:0,                        energy:"plant seeds, set intentions, begin anew" };
+  if (pos < 7.38)  return { name:"Waxing Crescent",  emoji:"🌒", pct, illumination:Math.round(pct*100),      energy:"build momentum, call things toward you" };
+  if (pos < 9.22)  return { name:"First Quarter",    emoji:"🌓", pct, illumination:50,                       energy:"take action, push through obstacles" };
+  if (pos < 14.77) return { name:"Waxing Gibbous",   emoji:"🌔", pct, illumination:Math.round(pct*100),      energy:"refine and adjust, strengthen workings" };
+  if (pos < 16.61) return { name:"Full Moon",         emoji:"🌕", pct, illumination:100,                     energy:"peak power, divination, gratitude, release" };
+  if (pos < 22.15) return { name:"Waning Gibbous",   emoji:"🌖", pct, illumination:Math.round((1-pct)*100), energy:"give thanks, share abundance, let go slowly" };
+  if (pos < 23.99) return { name:"Last Quarter",     emoji:"🌗", pct, illumination:50,                       energy:"banish, break habits, cleanse deeply" };
+  return               { name:"Waning Crescent",  emoji:"🌘", pct, illumination:Math.round((1-pct)*100), energy:"rest, reflect, release what no longer serves" };
+}
+
+function daysUntil(targetDate, fromDate) {
+  return Math.ceil((targetDate - fromDate) / 86400000);
+}
+
+function getNextMoon(from, targetName) {
+  let d = new Date(from);
+  for (let i = 0; i < 35; i++) {
+    d.setDate(d.getDate() + 1);
+    if (getMoonPhase(d).name === targetName) return new Date(d);
+  }
+  return null;
+}
+
+function getNextSabbat(from) {
+  const year = from.getFullYear();
+  let upcoming = [];
+  for (const s of SABBATS) {
+    let d = new Date(year, s.month, s.day);
+    if (d < from) d = new Date(year+1, s.month, s.day);
+    upcoming.push({...s, dateObj:d});
+  }
+  upcoming.sort((a,b) => a.dateObj - b.dateObj);
+  return upcoming[0];
+}
+
+function getUpcomingSabbats(from, count=4) {
+  const year = from.getFullYear();
+  let all = [];
+  for (const s of SABBATS) {
+    for (let y = year; y <= year+1; y++) {
+      let d = new Date(y, s.month, s.day);
+      if (d >= from) all.push({...s, dateObj:d});
+    }
+  }
+  all.sort((a,b) => a.dateObj - b.dateObj);
+  return all.slice(0, count);
+}
+
+function getDailyMyth(date) {
+  const start = new Date(date.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((date - start) / 86400000);
+  return MYTHOLOGY[dayOfYear % MYTHOLOGY.length];
+}
+
+// ── Moon SVG ──────────────────────────────────────────────────────────────────
+
+function drawMoonSVG(phase) {
+  const svg = document.getElementById('moonSVG');
+  const name = phase.name;
+  let inner = `
+    <defs>
+      <radialGradient id="mg" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#f5e6c8" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#c8a060" stop-opacity="0"/>
+      </radialGradient>
+      <clipPath id="mc"><circle cx="40" cy="40" r="26"/></clipPath>
+    </defs>
+    <circle cx="40" cy="40" r="36" fill="url(#mg)"/>
+    <circle cx="40" cy="40" r="26" fill="#2a2018" stroke="#8a6a3a" stroke-width="1"/>`;
+  if (name === "Full Moon") inner += `<circle cx="40" cy="40" r="26" fill="#f5e6c8"/>`;
+  else if (name === "Waxing Crescent") inner += `<g clip-path="url(#mc)"><circle cx="40" cy="40" r="26" fill="#2a2018"/><ellipse cx="52" cy="40" rx="14" ry="26" fill="#f5e6c8"/></g>`;
+  else if (name === "First Quarter") inner += `<g clip-path="url(#mc)"><circle cx="40" cy="40" r="26" fill="#2a2018"/><rect x="40" y="14" width="26" height="52" fill="#f5e6c8"/></g>`;
+  else if (name === "Waxing Gibbous") inner += `<g clip-path="url(#mc)"><circle cx="40" cy="40" r="26" fill="#f5e6c8"/><ellipse cx="30" cy="40" rx="16" ry="26" fill="#2a2018"/></g>`;
+  else if (name === "Waning Gibbous") inner += `<g clip-path="url(#mc)"><circle cx="40" cy="40" r="26" fill="#f5e6c8"/><ellipse cx="50" cy="40" rx="16" ry="26" fill="#2a2018"/></g>`;
+  else if (name === "Last Quarter") inner += `<g clip-path="url(#mc)"><circle cx="40" cy="40" r="26" fill="#2a2018"/><rect x="14" y="14" width="26" height="52" fill="#f5e6c8"/></g>`;
+  else if (name === "Waning Crescent") inner += `<g clip-path="url(#mc)"><circle cx="40" cy="40" r="26" fill="#2a2018"/><ellipse cx="28" cy="40" rx="14" ry="26" fill="#f5e6c8"/></g>`;
+  svg.innerHTML = inner;
+}
+
+// ── State & Render ────────────────────────────────────────────────────────────
+
+const today = new Date();
+let calYear = today.getFullYear();
+let calMonth = today.getMonth();
+let ritualIdx = 0;
+let loreOpen = false;
+
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const WEEKDAYS = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+
+function init() {
+  // Date header
+  document.getElementById('headerDate').textContent =
+    today.toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'}).toUpperCase();
+
+  const phase = getMoonPhase(today);
+  const nextFull = getNextMoon(today, "Full Moon");
+  const nextNew = getNextMoon(today, "New Moon");
+  const nextSabbat = getNextSabbat(today);
+  const myth = getDailyMyth(today);
+  const daysToSabbat = daysUntil(nextSabbat.dateObj, today);
+
+  // Moon
+  drawMoonSVG(phase);
+  document.getElementById('moonEmoji').textContent = phase.emoji;
+  document.getElementById('moonName').textContent = phase.name;
+  let energyHTML = '';
+  if (phase.name !== "Full Moon" && phase.name !== "New Moon")
+    energyHTML += `<span class="moon-illumination">${phase.illumination}% illuminated · </span>`;
+  energyHTML += `<em>${phase.energy}</em>`;
+  document.getElementById('moonEnergy').innerHTML = energyHTML;
+  let counters = '';
+  if (nextFull) counters += `🌕 Full moon in <strong>${daysUntil(nextFull, today)}d</strong>`;
+  if (nextNew) counters += `&nbsp;&nbsp;🌑 New moon in <strong>${daysUntil(nextNew, today)}d</strong>`;
+  document.getElementById('moonCounters').innerHTML = counters;
+
+  // Devotional
+  document.getElementById('devFigure').textContent = myth.figure;
+  document.getElementById('devType').textContent = myth.type;
+  document.getElementById('devText').textContent = myth.devotional;
+  document.getElementById('devReflection').textContent = myth.reflection;
+  document.getElementById('devLink').href = myth.url;
+  document.getElementById('devLinkText').textContent = `Explore further at ${myth.source}`;
+
+  // Sabbat
+  document.getElementById('sabbatName').textContent = `${nextSabbat.symbol} ${nextSabbat.name}`;
+  document.getElementById('sabbatDesc').textContent = nextSabbat.desc;
+  document.getElementById('sabbatDeity').textContent = nextSabbat.deity ? `🌿 ${nextSabbat.deity}` : '';
+  document.getElementById('sabbatDays').textContent = daysToSabbat;
+  document.getElementById('sabbatDate').textContent = nextSabbat.date;
+
+  // Ritual
+  renderRitual(phase, nextSabbat, daysToSabbat);
+
+  // Calendar
+  renderCalendar();
+
+  // Wheel
+  renderWheel();
+
+  // Eclipses
+  renderEclipses();
+}
+
+function renderRitual(phase, nextSabbat, daysToSabbat) {
+  const pool = RITUALS[phase ? phase.name : getMoonPhase(today).name] || RITUALS["New Moon"];
+  const ritual = pool[ritualIdx % pool.length];
+  document.getElementById('ritualText').textContent = ritual.text;
+
+  const noteEl = document.getElementById('ritualSabbatNote');
+  const sabbat = nextSabbat || getNextSabbat(today);
+  const days = daysToSabbat !== undefined ? daysToSabbat : daysUntil(sabbat.dateObj, today);
+  if (days <= 3) {
+    noteEl.textContent = `✨ ${sabbat.name} is in ${days} day${days===1?'':'s'} — begin your preparations. ${sabbat.desc}`;
+    noteEl.style.display = 'block';
+  } else {
+    noteEl.style.display = 'none';
+  }
+
+  // Lore items
+  const loreEl = document.getElementById('loreItems');
+  loreEl.innerHTML = '';
+  ritual.ingredients.forEach(ing => {
+    const lore = INGREDIENT_LORE[ing];
+    if (!lore) return;
+    loreEl.innerHTML += `
+      <div class="lore-item">
+        <div class="lore-name">${ing}</div>
+        <div class="lore-symbol">${lore.symbol}</div>
+        <div class="lore-celtic">${lore.celtic}</div>
+      </div>`;
+  });
+
+  // Reset lore state
+  loreOpen = false;
+  document.getElementById('lorePanel').classList.remove('open');
+  document.getElementById('loreBtn').classList.remove('open');
+  document.getElementById('loreBtn').textContent = '▼ What do these ingredients mean?';
+}
+
+function toggleLore() {
+  loreOpen = !loreOpen;
+  const panel = document.getElementById('lorePanel');
+  const btn = document.getElementById('loreBtn');
+  if (loreOpen) {
+    panel.classList.add('open');
+    btn.classList.add('open');
+    btn.textContent = '▲ Hide ingredient lore';
+  } else {
+    panel.classList.remove('open');
+    btn.classList.remove('open');
+    btn.textContent = '▼ What do these ingredients mean?';
+  }
+}
+
+function nextRitual() {
+  ritualIdx++;
+  renderRitual();
+}
+
+function renderCalendar() {
+  document.getElementById('calMonthLabel').textContent = `${MONTHS[calMonth]} ${calYear}`;
+
+  // Weekday headers
+  const wdEl = document.getElementById('calWeekdays');
+  wdEl.innerHTML = WEEKDAYS.map(d => `<div class="cal-weekday">${d}</div>`).join('');
+
+  // Days
+  const firstDay = new Date(calYear, calMonth, 1);
+  const lastDay = new Date(calYear, calMonth+1, 0);
+  let html = '';
+
+  for (let i = 0; i < firstDay.getDay(); i++) html += `<div class="cal-day empty"></div>`;
+
+  // Sabbat days in this month
+  const sabbatDays = new Set();
+  SABBATS.forEach(s => { if (s.month === calMonth) sabbatDays.add(s.day); });
+
+  // Eclipse days in this month
+  const eclipseDays = new Set();
+  ECLIPSES.forEach(e => {
+    if (e.date.getFullYear() === calYear && e.date.getMonth() === calMonth) eclipseDays.add(e.date.getDate());
+  });
+
+  for (let d = 1; d <= lastDay.getDate(); d++) {
+    const date = new Date(calYear, calMonth, d);
+    const phase = getMoonPhase(date);
+    const isToday = date.toDateString() === today.toDateString();
+    const isSabbat = sabbatDays.has(d);
+    const isEclipse = eclipseDays.has(d);
+    const isSpecial = phase.name === "Full Moon" || phase.name === "New Moon";
+    const sabbat = isSabbat ? SABBATS.find(s => s.month === calMonth && s.day === d) : null;
+
+    let cls = 'cal-day';
+    if (isToday) cls += ' today';
+    else if (isSabbat) cls += ' sabbat';
+
+    html += `<div class="${cls}">
+      <div class="cal-daynum">${d}</div>
+      <div class="cal-moon">${phase.emoji}</div>
+      ${isSabbat && sabbat ? `<div class="cal-sabbat-sym">${sabbat.symbol}</div>` : ''}
+      ${isEclipse ? `<div class="cal-eclipse">☀️</div>` : ''}
+      ${isSpecial ? `<div class="cal-dot"></div>` : ''}
+    </div>`;
+  }
+  document.getElementById('calGrid').innerHTML = html;
+}
+
+function changeMonth(dir) {
+  calMonth += dir;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0)  { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+function renderWheel() {
+  const sabbats = getUpcomingSabbats(today, 4);
+  document.getElementById('wheelList').innerHTML = sabbats.map((s, i) => `
+    <div class="wheel-item ${i===0?'next':''}">
+      <div class="wheel-sym">${s.symbol}</div>
+      <div class="wheel-body">
+        <div class="wheel-name">${s.name}</div>
+        <div class="wheel-desc">${s.desc}</div>
+        ${s.deity ? `<div class="wheel-deity">🌿 ${s.deity}</div>` : ''}
+      </div>
+      <div class="wheel-meta">
+        <div class="wheel-date">${s.date}</div>
+        <div class="wheel-days">${daysUntil(s.dateObj, today)}d</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderEclipses() {
+  const upcoming = ECLIPSES.filter(e => e.date >= today).slice(0, 4);
+  document.getElementById('eclipseList').innerHTML = upcoming.map((e, i) => `
+    <div class="eclipse-item ${i===0?'next':''}">
+      <div class="eclipse-header">
+        <div>
+          <div class="eclipse-type">${e.type.includes('Solar')?'☀️':'🌕'} ${e.type} Eclipse</div>
+          <div class="eclipse-date">${e.date.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}</div>
+        </div>
+        <div class="eclipse-meta">
+          <div class="eclipse-countdown">${daysUntil(e.date,today)}d away</div>
+          <div class="eclipse-vis">${e.visibility}</div>
+        </div>
+      </div>
+      <div class="eclipse-ritual">${e.ritual}</div>
+    </div>`).join('');
+}
+
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`view-${name}`).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── Run ───────────────────────────────────────────────────────────────────────
+init();
+</script>
+
+</body>
+</html>
